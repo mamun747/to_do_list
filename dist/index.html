@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" crossorigin href="/assets/index-CWqnMNhJ.css">
+</head>
+<body class="bg-[url(download.svg)] font-cursive selection:text-red-400">
+    <div class="flex justify-center items-center mt-12">
+        <div class="bg-gray-400 w-[400px] md:w-[600px] h-[650px] rounded-3xl shadow-2xl relative">
+            <h1 class="text-gray-100 font-bold text-[48px] text-center mt-6 underline underline-offset-4">To-Do List</h1>
+            <div class="flex justify-center mt-8 flex-col items-center p-10">
+                <label for="input" class="text-violet-500 font-semibold text-xl">Write your daily tasks:</label>
+                <div>
+                    <input type="text" id="input" placeholder="Add your task...." class="p-2 rounded-md outline-none mt-3 w-[300px]">
+                    <button id="add"><i class="fa-solid fa-pencil bg-red-400 p-3 rounded-md active:translate-y-1 transition-all hover:bg-red-500 mt-2 md:mt-0"></i></button>
+                </div>
+                <div class="mt-3 flex flex-col items-center">
+                    <h2 class="font-semibold text-lg border-b-2 border-b-sky-200">your added tasks</h2>
+                    <select id="list" multiple class="mt-4 w-96 rounded-lg outline-none overflow-auto h-56">
+                    </select>
+                    <div class="grid grid-cols-2 gap-5">
+                    <button id="remove" class="bg-blue-300 mt-2 rounded-lg hover:scale-110 transition-all hover:bg-blue-400 active:translate-y-1"><i class="fa-solid fa-trash-can text-red-500 text-lg"></i></button>
+                    <button id="edit" class="w-[180px] bg-blue-300 mt-2 rounded-lg text-lg text-violet-600 hover:scale-110 transition-all hover:bg-blue-400 active:translate-y-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+                <div id="last-modify" class="mt-3">Last modified: Never</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const input = document.getElementById('input');
+const add = document.getElementById('add');
+const remove = document.getElementById('remove');
+const list = document.getElementById('list');
+const edit = document.getElementById('edit')
+const lastModify = document.getElementById('last-modify');
+
+// add a to-do item
+add.addEventListener('click', () => {
+    let inputValue = input.value;
+    
+    if (inputValue === "") {
+        input.style.background = "red";
+    } else {
+        input.style.background = "white";
+    }
+
+    let newOption = new Option(inputValue, inputValue);
+    list.insertBefore(newOption, list.firstElementChild);
+
+    for (let i = 0; i < list.options.length; i++) {
+        list.options[i].text = `${i + 1}. ${list.options[i].value}`;
+    }
+    input.value = "";
+    modify();
+    input.addEventListener('input', () => {
+        input.style.background = "white";
+    });
+});
+
+
+// delete to-do item
+remove.addEventListener('click', (e) => {
+    e.preventDefault();
+    let selectedItem = [];
+    for(let i = 0; i < list.options.length; i++){
+        selectedItem[i] = list.options[i].selected;
+    };
+    let index = list.options.length;
+    while(index--){
+        if(selectedItem[index]){
+            list.remove(index);
+        }
+    }
+    for (let i = 0; i < list.options.length; i++) {
+        list.options[i].text = `${i + 1}. ${list.options[i].value}`;
+    }
+    modify();
+    updateOptionIndices();
+});
+
+
+// Edit to-do item
+edit.addEventListener('click', () => {
+    let selectedIndex = list.selectedIndex;
+
+    if (selectedIndex === -1) {
+        alert("Please select an item to edit.");
+        return;
+    }
+
+    let newValue = input.value.trim();
+    
+    if (newValue === "") {
+        input.style.background = "red";
+        return;
+    } else {
+        input.style.background = "white";
+    }
+
+    // Update the selected option's value and text
+    let optionToEdit = list.options[selectedIndex];
+    optionToEdit.value = newValue;
+    optionToEdit.text = `${selectedIndex + 1}. ${newValue}`;
+
+    // Update indices for consistency
+    modify();
+    updateOptionIndices();
+    input.value = "";
+});
+
+function updateOptionIndices() {
+    for (let i = 0; i < list.options.length; i++) {
+        list.options[i].text = `${i + 1}. ${list.options[i].value}`;
+    }
+};
+
+// tracking last modifying time
+function getCurrentDate(){
+    let now = new Date();
+    return now.toLocaleString();
+}
+
+function modify(){
+    lastModify.textContent = `Last Modified: ${getCurrentDate()}`
+}
+    </script>
+</body>
+</html>
